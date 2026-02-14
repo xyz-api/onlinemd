@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>加载中...</title>
+  <style>
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #dee0e3; border-radius: 3px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif; }
+    body { background: #f5f6f7; color: #1f2329; font-size: 14px; line-height: 1.6; }
+    .topbar {
+      height: 56px; padding: 0 28px; background: #fff; border-bottom: 1px solid #e5e6eb;
+      display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10;
+    }
+    .topbar-title { font-size: 15px; font-weight: 600; color: #1f2329; }
+    .topbar-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 500;
+      border: 1px solid #dee0e3; background: #fff; color: #1f2329;
+      cursor: pointer; transition: all .15s; user-select: none;
+    }
+    .topbar-btn:hover { background: #f5f6f7; border-color: #c9cdd4; }
+    .topbar-btn svg { width: 14px; height: 14px; color: #646a73; }
+    .topbar-btn.primary { background: #3370ff; color: #fff; border-color: #3370ff; }
+    .topbar-btn.primary:hover { background: #245bdb; border-color: #245bdb; }
+    .topbar-btn.primary svg { color: #fff; }
+    .topbar-actions { display: flex; gap: 6px; }
+    .content-wrap { display: flex; justify-content: center; padding: 28px; }
+    .content-card {
+      width: 100%; max-width: 820px; background: #fff; border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.04), 0 1px 2px rgba(0,0,0,.02);
+      padding: 40px 48px 60px; min-height: 400px;
+    }
+    .content-card h1 { font-size: 28px; font-weight: 700; color: #1f2329; margin-bottom: 8px; line-height: 1.35; }
+    .content-card h2 { font-size: 22px; font-weight: 600; color: #1f2329; margin-top: 36px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #f0f1f5; }
+    .content-card h3 { font-size: 17px; font-weight: 600; color: #1f2329; margin-top: 24px; margin-bottom: 8px; }
+    .content-card h4 { font-size: 15px; font-weight: 600; color: #1f2329; margin-top: 20px; margin-bottom: 6px; }
+    .content-card p { line-height: 1.8; color: #3b3e45; margin: 8px 0; font-size: 15px; }
+    .content-card a { color: #3370ff; text-decoration: none; }
+    .content-card a:hover { text-decoration: underline; }
+    .content-card img { max-width: 100%; height: auto; margin: 12px 0; border-radius: 8px; }
+    .content-card ul, .content-card ol { padding-left: 24px; margin: 8px 0; color: #3b3e45; }
+    .content-card li { margin: 4px 0; line-height: 1.8; font-size: 15px; }
+    .content-card pre { background: #f7f8fa; border: 1px solid #eef0f3; padding: 16px 20px; border-radius: 8px; overflow-x: auto; font-size: 13px; line-height: 1.6; margin: 12px 0; }
+    .content-card code { font-family: "SF Mono", "Fira Code", "Consolas", monospace; font-size: 13px; }
+    .content-card p code, .content-card li code { background: #f0f1f5; padding: 2px 6px; border-radius: 4px; color: #d63384; }
+    .content-card blockquote { border-left: 3px solid #3370ff; padding: 12px 16px; margin: 16px 0; background: #f7f9ff; border-radius: 0 8px 8px 0; color: #4e5969; }
+    .content-card blockquote p { margin: 0; color: #4e5969; }
+    .content-card table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+    .content-card table th { background: #f7f8fa; font-weight: 600; text-align: left; padding: 10px 14px; border: 1px solid #e5e6eb; color: #1f2329; }
+    .content-card table td { padding: 10px 14px; border: 1px solid #e5e6eb; color: #3b3e45; }
+    .content-card table tr:hover td { background: #fafbfc; }
+    .content-card hr { border: none; border-top: 1px solid #eef0f3; margin: 24px 0; }
+    .content-card strong { font-weight: 600; color: #1f2329; }
+    .toast-msg { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(10px); background: #1f2329; color: #fff; padding: 10px 24px; border-radius: 8px; font-size: 13px; opacity: 0; transition: all .3s ease; pointer-events: none; z-index: 99; box-shadow: 0 4px 12px rgba(0,0,0,.15); }
+    .toast-msg.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    @media (max-width: 768px) {
+      .topbar { padding: 0 12px; height: 48px; }
+      .topbar-title { font-size: 14px; }
+      .content-wrap { padding: 0; }
+      .content-card { padding: 24px 20px 40px; border-radius: 0; }
+      .topbar-btn { padding: 5px 10px; font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <a href="index.html" class="topbar-btn" style="text-decoration:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        返回
+      </a>
+      <div class="topbar-title" id="topbarTitle">加载中...</div>
+    </div>
+    <div class="topbar-actions">
+      <button class="topbar-btn" id="shareBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+        分享
+      </button>
+      <button class="topbar-btn primary" id="dlBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        下载
+      </button>
+    </div>
+  </div>
+  <div class="content-wrap">
+    <div class="content-card" id="content">加载中...</div>
+  </div>
+  <div class="toast-msg" id="toast"></div>
+
+  <script src="libs/marked.min.js"></script>
+  <script src="libs/jszip.min.js"></script>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const folder = params.get('folder');
+    const name = params.get('name') || folder;
+    const content = document.getElementById('content');
+    const toast = document.getElementById('toast');
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 1800);
+    }
+
+    if (folder) {
+      document.title = name + ' - 在线文档';
+      document.getElementById('topbarTitle').textContent = name;
+
+      document.getElementById('shareBtn').onclick = () => {
+        navigator.clipboard.writeText(location.href).then(() => showToast('链接已复制到剪贴板'));
+      };
+
+      document.getElementById('dlBtn').onclick = async () => {
+        const btn = document.getElementById('dlBtn');
+        btn.disabled = true; btn.textContent = '打包中...';
+        try {
+          const mdRes = await fetch(folder + '/index.md');
+          const mdText = await mdRes.text();
+          const zip = new JSZip();
+          zip.file('index.md', mdText);
+          const imgRe = /!\[[^\]]*\]\((?!https?:\/\/)([^)]+)\)/g;
+          const imgs = []; let m;
+          while ((m = imgRe.exec(mdText)) !== null) imgs.push(m[1].replace(/^\.\//, ''));
+          await Promise.all(imgs.map(async img => {
+            try { const r = await fetch(folder + '/' + img); if (r.ok) zip.file(img, await r.blob()); } catch(e) {}
+          }));
+          const blob = await zip.generateAsync({ type: 'blob' });
+          const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+          a.download = name + '.zip'; a.click(); URL.revokeObjectURL(a.href);
+        } catch(e) { showToast('下载失败'); }
+        btn.disabled = false; btn.textContent = '下载';
+      };
+
+      fetch(folder + '/index.md').then(r => {
+        if (!r.ok) throw new Error('加载失败');
+        return r.text();
+      }).then(md => {
+        md = md.replace(/!\[([^\]]*)\]\((?!https?:\/\/)([^)]+)\)/g, (m, alt, src) => `![${alt}](${folder}/${src})`);
+        content.innerHTML = marked.parse(md);
+      }).catch(e => {
+        content.innerHTML = '<div style="padding:40px;text-align:center;color:#f53f3f">' + e.message + '</div>';
+      });
+    } else {
+      content.innerHTML = '<div style="padding:40px;text-align:center;color:#8f959e">缺少参数</div>';
+    }
+  </script>
+</body>
+</html>
